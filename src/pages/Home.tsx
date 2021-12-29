@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Alert, StyleSheet, View } from 'react-native';
 
 import { Header } from '../components/Header';
 import { Task, TasksList } from '../components/TasksList';
@@ -15,7 +15,12 @@ export function Home() {
       title: newTaskTitle,
       done: false
     }
-    setTasks(oldState => [...oldState, newTask])
+    const alreadyExistes = tasks.find(item => item.title == newTaskTitle)
+    if (alreadyExistes){
+      Alert.alert("Esta task já existe", "Não podes criar duas tasks com o mesmo nome")
+      return
+    }else{setTasks(oldState => [...oldState, newTask])}
+    
   }
 
   function handleToggleTaskDone(id: number) {
@@ -27,14 +32,24 @@ export function Home() {
     }
     itemFound.done = !itemFound.done
     setTasks(updatedTasks)
-    
-
   }
 
   function handleRemoveTask(id: number) {
     //TODO - remove task from state
-    setTasks(oldState => oldState.filter(tasks => tasks.id !== id))
+    Alert.alert("Excluir task","Tens certeza que desejas excluir esta task?",[
+      {
+        text: "sim",
+        onPress: () => setTasks(oldState => oldState.filter(tasks => tasks.id !== id))
+      },
+      {
+        text: "não",
+        onPress: () => {return}
+      }
+    ], {cancelable: true})
+    
   }
+  
+  function handleEditTask(TaskId: number, TaskNewTitle: string){}
 
   return (
     <View style={styles.container}>
@@ -46,6 +61,7 @@ export function Home() {
         tasks={tasks} 
         toggleTaskDone={handleToggleTaskDone}
         removeTask={handleRemoveTask} 
+        editTask={handleEditTask}
       />
     </View>
   )

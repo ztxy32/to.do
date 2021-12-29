@@ -1,6 +1,7 @@
 import React from 'react';
 import { FlatList, Image, TouchableOpacity, View, Text, StyleSheet} from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
+import  EvilIcons  from 'react-native-vector-icons/EvilIcons'; 
 
 import { ItemWrapper } from './ItemWrapper';
 
@@ -16,9 +17,10 @@ interface TasksListProps{
   tasks: Task[];
   toggleTaskDone: (id: number) => void;
   removeTask: (id: number) => void;
+  editTask: (id: number) => void;
 }
 
-export function TasksList({ tasks, toggleTaskDone, removeTask }: TasksListProps) {
+export function TasksList({ tasks, toggleTaskDone, removeTask, editTask }: TasksListProps) {
   
   return (
     <FlatList
@@ -43,13 +45,7 @@ export function TasksList({ tasks, toggleTaskDone, removeTask }: TasksListProps)
                   style={item.done ? styles.taskMarkerDone: styles.taskMarker  }
                              
                 >
-                  { item.done && (
-                    <Icon 
-                      name="check"
-                      size={12}
-                      color="#FFF"
-                    />
-                  )}
+                  { item.done && (<Icon name="check" size={12} color="#FFF"/>)}
                 </View>
 
                 <Text 
@@ -61,21 +57,23 @@ export function TasksList({ tasks, toggleTaskDone, removeTask }: TasksListProps)
                 </Text>
               </TouchableOpacity>
             </View>
-
-            <TouchableOpacity
-              testID={`trash-${index}`}
-              style={{ paddingHorizontal: 24 }}
-              //TODO - use onPress (remove task) prop
-              onPress={() => removeTask(item.id)}
-            >
-              <Image source={trashIcon} />
-            </TouchableOpacity>
+            <View style={{alignItems: 'center', justifyContent: 'center', flexDirection: 'row'}}>
+              <TouchableOpacity onPress={() => editTask(item.id)}>
+                <EvilIcons name="pencil" size={24} color="#aaa"/>
+              </TouchableOpacity>
+              <TouchableOpacity
+                testID={`trash-${index}`}
+                style={{ paddingHorizontal: 24 }}
+                //TODO - use onPress (remove task) prop
+                onPress={() => removeTask(item.id)}
+              >
+                <Image source={trashIcon} />
+              </TouchableOpacity>
+            </View>
           </ItemWrapper>
         )
       }}
-      style={{
-        marginTop: 32
-      }}
+      style={{marginTop: 32}}
     />
   )
 }

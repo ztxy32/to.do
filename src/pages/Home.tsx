@@ -48,8 +48,13 @@ export function Home() {
     ], {cancelable: true})
     
   }
-  
-  function handleEditTask(TaskId: number, TaskNewTitle: string){}
+  function handleEditTask(TaskId: number, TaskNewTitle: string){
+    const updatedTasks = tasks.map(task => ({...task}))
+    const taskItem = updatedTasks.find(item => item.id == TaskId)
+    if (taskItem){
+      taskItem.title = TaskNewTitle
+    }else{return}
+  }
 
   return (
     <View style={styles.container}>

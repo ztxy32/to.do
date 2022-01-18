@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { View, TouchableOpacity, Text, Image, StyleSheet} from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import { View, TouchableOpacity, TextInput, Image, StyleSheet} from "react-native";
 import trashIcon from '../assets/icons/trash/trash.png';
 import xIcon from '../assets/icons/x/X.png';
 import editIcon from '../assets/icons/edit/edit.png';
@@ -15,43 +15,78 @@ interface taskItemProps{
 
 
 export default function TaskItem({task, toggleTaskDone, removeTask, editTask}:taskItemProps){
-    const [isEditing, setIsEditing] = useState();
+    const [isEditing, setIsEditing] = useState(false);
+    const [newTitle, setNewTitle] = useState(task.title);
+    const textInputRef = useRef<TextInput>(null);
+
+    function handleEditing(){
+        setIsEditing(true);
+    }
+    function hanleCancelEditing(){
+        setNewTitle(task.title);
+        setIsEditing(false);
+    }
+    function handleSubmitEditing(){
+        editTask(task.id, newTitle);
+        setIsEditing(false);
+    }
+    useEffect( () => {
+        if(textInputRef.current){
+            if(isEditing){
+                textInputRef.current.focus();
+            }else{ textInputRef.current.blur(); }
+        }
+    },[isEditing])
+
     return(
         <>
             <View>
-                <TouchableOpacity activeOpacity={0.7} style={styles.taskButton} onPress={() => toggleTaskDone(task.id)}>
+                <TouchableOpacity activeOpacity={0.7} style={styles.taskButton} onPress={() => toggleTaskDone(task.id)} disabled={isEditing}>
                     <View style={task.done ? styles.taskMarkerDone: styles.taskMarker}>
                         { task.done && (<Icon name="check" size={12} color="#FFF"/>)}
                     </View>
-                    <Text style={task.done ? styles.taskTextDone: styles.taskText  }> {task.title} </Text>
+                    <TextInput 
+                        style={task.done ? styles.taskTextDone: styles.taskText}
+                        value={newTitle}
+                        onChangeText={setNewTitle}
+                        editable={isEditing}
+                        onSubmitEditing={handleSubmitEditing}
+                        ref={textInputRef}
+                        />
                 </TouchableOpacity>
             </View>
             <View style={{alignItems: 'center', justifyContent: 'center', flexDirection: 'row'}}>
-                <TouchableOpacity onPress={() => editTask(task.id, task.title)} style={{paddingHorizontal: 10}}>
-                    <Image source={isEditing ? xIcon : editIcon}/>
-                </TouchableOpacity>
                 
+                {isEditing ? 
+                    <TouchableOpacity style={{ paddingHorizontal: 10 }} onPress={hanleCancelEditing}>
+                        <Image source={xIcon} />
+                    </TouchableOpacity>
+                    :
+                    <TouchableOpacity style={{ paddingHorizontal: 10 }} onPress={handleEditing}>
+                        <Image source={editIcon} />
+                    </TouchableOpacity>  
+                }
                 <View style={{width: 1, height: 28, backgroundColor:"#C4C4C4"}}/>
+                <TouchableOpacity style={{ paddingHorizontal: 10 }} onPress={() => removeTask(task.id)} disabled={isEditing}>
+                    <Image source={trashIcon} style={{opacity: isEditing ? .3 : 1}} />
+                </TouchableOpacity>  
+                
+               
 
-                <TouchableOpacity style={{ paddingHorizontal: 10 }} onPress={() => removeTask(task.id)}>
-                    <Image source={trashIcon} />
-                </TouchableOpacity>
+                
             </View>
       </>
     );
 }
 
-
-
 const styles = StyleSheet.create({
     taskButton: {
       flex: 1,
       paddingHorizontal: 24,
-      paddingVertical: 15,
       marginBottom: 4,
       borderRadius: 4,
       flexDirection: 'row',
-      alignItems: 'center'
+      alignItems: 'center',
     },
     taskMarker: {
       height: 16,

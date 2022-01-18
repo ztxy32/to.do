@@ -54,6 +54,7 @@ export function Home() {
     if (taskItem){
       taskItem.title = TaskNewTitle
     }else{return}
+    setTasks(updatedTasks)
   }
 
   return (

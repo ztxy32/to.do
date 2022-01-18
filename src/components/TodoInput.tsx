@@ -10,14 +10,7 @@ export function TodoInput({ addTask }: TodoInputProps) {
   const [task, setTask] = useState('');
 
   function handleAddNewTask() {
-    //TODO - Call addTask if task not empty and clean input value     
-    if (!task){
-      return
-    }else{
-      addTask(task)
-      setTask("")
-    }
-   
+    if (!task){ return }else{ addTask(task); setTask("") }
   }
 
   return (
